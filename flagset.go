@@ -38,8 +38,10 @@ type FlagSet struct {
 	formal        map[NormalizedName]*Flag
 	orderedFormal []*Flag
 	shorthands    map[byte]*Flag
-	normalizeFunc NormalizeFunc
-	addedGoFlags  bool
+	normalizeFunc     NormalizeFunc
+	addedGoFlags      bool
+	mutuallyExclusive []flagGroup
+	requiredTogether  []flagGroup
 }
 
 // NewFlagSet creates a new FlagSet with the given name and error handling behavior.
@@ -329,6 +331,9 @@ func (f *FlagSet) Parse(arguments []string) error {
 	f.argsLenAtDash = -1
 
 	err := f.parseArgs(arguments)
+	if err == nil {
+		err = f.validateFlagGroups()
+	}
 	if err != nil {
 		switch f.errorHandling {
 		case ContinueOnError:
