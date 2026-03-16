@@ -39,7 +39,6 @@ type FlagSet struct {
 	orderedFormal []*Flag
 	shorthands    map[byte]*Flag
 	normalizeFunc     NormalizeFunc
-	addedGoFlags      bool
 	mutuallyExclusive []flagGroup
 	requiredTogether  []flagGroup
 }
@@ -339,7 +338,7 @@ func (f *FlagSet) Parse(arguments []string) error {
 		case ContinueOnError:
 			return err
 		case ExitOnError:
-			fmt.Fprintln(f.GetOutput(), err)
+			_, _ = fmt.Fprintln(f.GetOutput(), err)
 			os.Exit(2)
 		case PanicOnError:
 			panic(err)
@@ -408,7 +407,7 @@ func (f *FlagSet) parseLongArg(s string, args []string) ([]string, error) {
 	}
 
 	if flag.Deprecated != "" {
-		fmt.Fprintf(f.GetOutput(), "Flag --%s has been deprecated, %s\n", name, flag.Deprecated)
+		_, _ = fmt.Fprintf(f.GetOutput(), "Flag --%s has been deprecated, %s\n", name, flag.Deprecated)
 	}
 
 	if bf, ok := flag.Value.(boolFlag); ok && bf.IsBoolFlag() {
@@ -451,10 +450,10 @@ func (f *FlagSet) parseShortArg(shorthands string, args []string) ([]string, err
 		}
 
 		if flag.ShorthandDeprecated != "" {
-			fmt.Fprintf(f.GetOutput(), "Flag shorthand -%c has been deprecated, %s\n", c, flag.ShorthandDeprecated)
+			_, _ = fmt.Fprintf(f.GetOutput(), "Flag shorthand -%c has been deprecated, %s\n", c, flag.ShorthandDeprecated)
 		}
 		if flag.Deprecated != "" {
-			fmt.Fprintf(f.GetOutput(), "Flag --%s has been deprecated, %s\n", flag.Name, flag.Deprecated)
+			_, _ = fmt.Fprintf(f.GetOutput(), "Flag --%s has been deprecated, %s\n", flag.Name, flag.Deprecated)
 		}
 
 		if bf, ok := flag.Value.(boolFlag); ok && bf.IsBoolFlag() {

@@ -13,7 +13,9 @@ func TestTypedString(t *testing.T) {
 		t.Errorf("expected 'default', got '%s'", name.Get())
 	}
 
-	f.Parse([]string{"-n", "hello"})
+	if err := f.Parse([]string{"-n", "hello"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if name.Get() != "hello" {
 		t.Errorf("expected 'hello', got '%s'", name.Get())
 	}
@@ -27,7 +29,9 @@ func TestTypedBool(t *testing.T) {
 		t.Error("expected false")
 	}
 
-	f.Parse([]string{"-v"})
+	if err := f.Parse([]string{"-v"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if !verbose.Get() {
 		t.Error("expected true")
 	}
@@ -37,7 +41,9 @@ func TestTypedInt(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	count := TypedInt(f, "count", "c", 0, "count")
 
-	f.Parse([]string{"--count=42"})
+	if err := f.Parse([]string{"--count=42"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if count.Get() != 42 {
 		t.Errorf("expected 42, got %d", count.Get())
 	}
@@ -47,7 +53,9 @@ func TestTypedFloat64(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	rate := TypedFloat64(f, "rate", "", 0.0, "rate")
 
-	f.Parse([]string{"--rate=3.14"})
+	if err := f.Parse([]string{"--rate=3.14"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if rate.Get() != 3.14 {
 		t.Errorf("expected 3.14, got %f", rate.Get())
 	}
@@ -57,7 +65,9 @@ func TestTypedDuration(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	timeout := TypedDuration(f, "timeout", "t", time.Second, "timeout")
 
-	f.Parse([]string{"-t", "5m"})
+	if err := f.Parse([]string{"-t", "5m"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if timeout.Get() != 5*time.Minute {
 		t.Errorf("expected 5m, got %v", timeout.Get())
 	}
@@ -67,7 +77,9 @@ func TestTypedStringSlice(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	tags := TypedStringSlice(f, "tags", "", nil, "tags")
 
-	f.Parse([]string{"--tags=a,b,c"})
+	if err := f.Parse([]string{"--tags=a,b,c"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	got := tags.Get()
 	if len(got) != 3 || got[0] != "a" {
 		t.Errorf("expected [a b c], got %v", got)

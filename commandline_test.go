@@ -451,15 +451,21 @@ func TestCommandLineUtilities(t *testing.T) {
 	SetInterspersed(false)
 	SetOutput(&bytes.Buffer{})
 
-	MarkHidden("name")
-	MarkDeprecated("name", "use something else")
+	if err := MarkHidden("name"); err != nil {
+		t.Fatalf("MarkHidden: %v", err)
+	}
+	if err := MarkDeprecated("name", "use something else"); err != nil {
+		t.Fatalf("MarkDeprecated: %v", err)
+	}
 }
 
 func TestCommandLineVisitVisitAll(t *testing.T) {
 	resetCommandLine()
 	String("a", "", "")
 	String("b", "", "")
-	Set("a", "val")
+	if err := Set("a", "val"); err != nil {
+		t.Fatalf("Set: %v", err)
+	}
 
 	visitCount := 0
 	Visit(func(f *Flag) { visitCount++ })

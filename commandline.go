@@ -13,7 +13,9 @@ var CommandLine = NewFlagSet(os.Args[0], ExitOnError)
 
 // Parse parses the command-line flags from os.Args[1:].
 func Parse() {
-	CommandLine.Parse(os.Args[1:])
+	// CommandLine uses ExitOnError, so Parse will os.Exit on error
+	// and never actually return a non-nil error.
+	_ = CommandLine.Parse(os.Args[1:])
 }
 
 // Parsed returns true if the command-line flags have been parsed.

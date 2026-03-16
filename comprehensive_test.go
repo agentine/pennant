@@ -126,7 +126,9 @@ func TestGetDuration(t *testing.T) {
 func TestGetCount(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	f.CountP("verbose", "v", "")
-	f.Parse([]string{"-v", "-v"})
+	if err := f.Parse([]string{"-v", "-v"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	v, err := f.GetCount("verbose")
 	if err != nil || v != 2 {
 		t.Errorf("expected 2, got %d, err=%v", v, err)
@@ -354,7 +356,9 @@ func TestErrRequiredTogetherMessage(t *testing.T) {
 func TestIPMaskHexParsing(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	f.IPMask("mask", nil, "")
-	f.Parse([]string{"--mask=ffffff00"})
+	if err := f.Parse([]string{"--mask=ffffff00"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	v, _ := f.GetIPMask("mask")
 	if v.String() != "ffffff00" {
 		expected := net.IPv4Mask(255, 255, 255, 0)
@@ -379,7 +383,9 @@ func TestVarP(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	var s string
 	f.VarP(newStringValue("world", &s), "name", "n", "a name")
-	f.Parse([]string{"-n", "test"})
+	if err := f.Parse([]string{"-n", "test"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if s != "test" {
 		t.Errorf("expected 'test', got '%s'", s)
 	}
@@ -448,7 +454,9 @@ func TestParseEqualsInLongFlag(t *testing.T) {
 func TestCountWithExplicitValue(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	v := f.CountP("verbose", "v", "")
-	f.Parse([]string{"--verbose=5"})
+	if err := f.Parse([]string{"--verbose=5"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if *v != 5 {
 		t.Errorf("expected 5, got %d", *v)
 	}
@@ -457,7 +465,9 @@ func TestCountWithExplicitValue(t *testing.T) {
 func TestParseIntFlagHex(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	v := f.Int("val", 0, "")
-	f.Parse([]string{"--val=0xff"})
+	if err := f.Parse([]string{"--val=0xff"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if *v != 255 {
 		t.Errorf("expected 255, got %d", *v)
 	}
@@ -469,13 +479,17 @@ func TestSliceValueAppendReplace(t *testing.T) {
 	flag := f.Lookup("nums")
 	sv := flag.Value.(SliceValue)
 
-	sv.Append("2")
+	if err := sv.Append("2"); err != nil {
+		t.Fatalf("Append: %v", err)
+	}
 	got := sv.GetSlice()
 	if len(got) != 2 || got[1] != "2" {
 		t.Errorf("Append failed: %v", got)
 	}
 
-	sv.Replace([]string{"10", "20"})
+	if err := sv.Replace([]string{"10", "20"}); err != nil {
+		t.Fatalf("Replace: %v", err)
+	}
 	got = sv.GetSlice()
 	if len(got) != 2 || got[0] != "10" {
 		t.Errorf("Replace failed: %v", got)
@@ -487,8 +501,12 @@ func TestFloat64SliceAppendReplace(t *testing.T) {
 	f.Float64Slice("nums", []float64{1.0}, "")
 	flag := f.Lookup("nums")
 	sv := flag.Value.(SliceValue)
-	sv.Append("2.5")
-	sv.Replace([]string{"3.0"})
+	if err := sv.Append("2.5"); err != nil {
+		t.Fatalf("Append: %v", err)
+	}
+	if err := sv.Replace([]string{"3.0"}); err != nil {
+		t.Fatalf("Replace: %v", err)
+	}
 	got := sv.GetSlice()
 	if len(got) != 1 || got[0] != "3" {
 		t.Errorf("expected [3], got %v", got)
@@ -500,8 +518,12 @@ func TestBoolSliceAppendReplace(t *testing.T) {
 	f.BoolSlice("flags", nil, "")
 	flag := f.Lookup("flags")
 	sv := flag.Value.(SliceValue)
-	sv.Append("true")
-	sv.Replace([]string{"false", "true"})
+	if err := sv.Append("true"); err != nil {
+		t.Fatalf("Append: %v", err)
+	}
+	if err := sv.Replace([]string{"false", "true"}); err != nil {
+		t.Fatalf("Replace: %v", err)
+	}
 	got := sv.GetSlice()
 	if len(got) != 2 || got[0] != "false" {
 		t.Errorf("expected [false true], got %v", got)
@@ -513,8 +535,12 @@ func TestDurationSliceAppendReplace(t *testing.T) {
 	f.DurationSlice("durs", nil, "")
 	flag := f.Lookup("durs")
 	sv := flag.Value.(SliceValue)
-	sv.Append("1s")
-	sv.Replace([]string{"2m", "3h"})
+	if err := sv.Append("1s"); err != nil {
+		t.Fatalf("Append: %v", err)
+	}
+	if err := sv.Replace([]string{"2m", "3h"}); err != nil {
+		t.Fatalf("Replace: %v", err)
+	}
 	got := sv.GetSlice()
 	if len(got) != 2 {
 		t.Errorf("expected 2, got %d", len(got))
@@ -526,8 +552,12 @@ func TestIPSliceAppendReplace(t *testing.T) {
 	f.IPSlice("addrs", nil, "")
 	flag := f.Lookup("addrs")
 	sv := flag.Value.(SliceValue)
-	sv.Append("1.2.3.4")
-	sv.Replace([]string{"5.6.7.8"})
+	if err := sv.Append("1.2.3.4"); err != nil {
+		t.Fatalf("Append: %v", err)
+	}
+	if err := sv.Replace([]string{"5.6.7.8"}); err != nil {
+		t.Fatalf("Replace: %v", err)
+	}
 	got := sv.GetSlice()
 	if len(got) != 1 {
 		t.Errorf("expected 1, got %d", len(got))
@@ -539,13 +569,19 @@ func TestStringArrayAppendReplace(t *testing.T) {
 	f.StringArray("arr", nil, "")
 	flag := f.Lookup("arr")
 	sv := flag.Value.(SliceValue)
-	sv.Append("a")
-	sv.Append("b")
+	if err := sv.Append("a"); err != nil {
+		t.Fatalf("Append: %v", err)
+	}
+	if err := sv.Append("b"); err != nil {
+		t.Fatalf("Append: %v", err)
+	}
 	got := sv.GetSlice()
 	if len(got) != 2 {
 		t.Errorf("expected 2, got %d", len(got))
 	}
-	sv.Replace([]string{"x"})
+	if err := sv.Replace([]string{"x"}); err != nil {
+		t.Fatalf("Replace: %v", err)
+	}
 	got = sv.GetSlice()
 	if len(got) != 1 || got[0] != "x" {
 		t.Errorf("expected [x], got %v", got)
@@ -567,7 +603,9 @@ func TestStringToStringString(t *testing.T) {
 func TestStringToStringMerge(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	v := f.StringToString("labels", map[string]string{"a": "1"}, "")
-	f.Parse([]string{"--labels=b=2", "--labels=c=3"})
+	if err := f.Parse([]string{"--labels=b=2", "--labels=c=3"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if (*v)["b"] != "2" || (*v)["c"] != "3" {
 		t.Errorf("expected merge, got %v", *v)
 	}
@@ -642,7 +680,9 @@ func TestTypeStrings(t *testing.T) {
 func TestHasAvailableFlagsAllHidden(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	f.String("hidden", "", "")
-	f.MarkHidden("hidden")
+	if err := f.MarkHidden("hidden"); err != nil {
+		t.Fatalf("MarkHidden: %v", err)
+	}
 	if f.HasAvailableFlags() {
 		t.Error("expected HasAvailableFlags() to be false when all flags are hidden")
 	}

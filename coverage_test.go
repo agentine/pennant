@@ -337,7 +337,9 @@ func TestCountVar(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	var v int
 	f.CountVar(&v, "verbose", "")
-	f.Parse([]string{"--verbose", "--verbose"})
+	if err := f.Parse([]string{"--verbose", "--verbose"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if v != 2 {
 		t.Errorf("expected 2, got %d", v)
 	}
@@ -346,7 +348,9 @@ func TestCountVar(t *testing.T) {
 func TestCountDirect(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	v := f.Count("verbose", "")
-	f.Parse([]string{"--verbose"})
+	if err := f.Parse([]string{"--verbose"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 	if *v != 1 {
 		t.Errorf("expected 1, got %d", *v)
 	}
@@ -450,7 +454,7 @@ func TestParsePanicOnErrorCoverage(t *testing.T) {
 			t.Error("expected panic")
 		}
 	}()
-	f.Parse([]string{"--unknown"})
+	_ = f.Parse([]string{"--unknown"})
 }
 
 func TestParseShortArgErrors(t *testing.T) {

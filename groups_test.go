@@ -111,7 +111,9 @@ func TestFlagUsagesHidesHidden(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	f.String("visible", "", "shown")
 	f.String("hidden", "", "not shown")
-	f.MarkHidden("hidden")
+	if err := f.MarkHidden("hidden"); err != nil {
+		t.Fatalf("MarkHidden: %v", err)
+	}
 
 	usage := f.FlagUsages()
 	if !strings.Contains(usage, "visible") {

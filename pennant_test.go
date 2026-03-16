@@ -510,7 +510,9 @@ func TestVisit(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	f.String("name", "", "name")
 	f.String("other", "", "other")
-	f.Set("name", "hello")
+	if err := f.Set("name", "hello"); err != nil {
+		t.Fatalf("Set: %v", err)
+	}
 
 	var visited []string
 	f.Visit(func(flag *Flag) {
@@ -583,7 +585,9 @@ func TestDeprecatedFlagWarning(t *testing.T) {
 	f.SetOutput(&buf)
 	var old string
 	f.StringVar(&old, "old-flag", "", "old flag")
-	f.MarkDeprecated("old-flag", "use --new-flag instead")
+	if err := f.MarkDeprecated("old-flag", "use --new-flag instead"); err != nil {
+		t.Fatalf("MarkDeprecated: %v", err)
+	}
 
 	if err := f.Parse([]string{"--old-flag=val"}); err != nil {
 		t.Fatal(err)
@@ -614,7 +618,9 @@ func TestHasAvailableFlags(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
 	f.String("visible", "", "visible")
 	f.String("hidden", "", "hidden")
-	f.MarkHidden("hidden")
+	if err := f.MarkHidden("hidden"); err != nil {
+		t.Fatalf("MarkHidden: %v", err)
+	}
 
 	if !f.HasAvailableFlags() {
 		t.Error("expected HasAvailableFlags() to be true")
@@ -742,7 +748,9 @@ func TestAnnotation(t *testing.T) {
 
 func TestArgOutOfBounds(t *testing.T) {
 	f := NewFlagSet("test", ContinueOnError)
-	f.Parse([]string{"a"})
+	if err := f.Parse([]string{"a"}); err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
 
 	if f.Arg(-1) != "" {
 		t.Error("expected empty for negative index")
@@ -771,7 +779,9 @@ func TestParseShorthandDeprecatedWarning(t *testing.T) {
 	f.SetOutput(&buf)
 	var name string
 	f.StringVarP(&name, "name", "n", "", "name")
-	f.MarkShorthandDeprecated("name", "use --name instead")
+	if err := f.MarkShorthandDeprecated("name", "use --name instead"); err != nil {
+		t.Fatalf("MarkShorthandDeprecated: %v", err)
+	}
 
 	if err := f.Parse([]string{"-n", "hello"}); err != nil {
 		t.Fatal(err)

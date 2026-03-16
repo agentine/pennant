@@ -134,7 +134,7 @@ func (f *FlagSet) FlagUsagesWrapped(cols int) string {
 // wrapUsage writes usage text with word wrapping, indented to the given offset.
 func wrapUsage(w io.Writer, usage string, indent, cols int) {
 	if cols <= indent {
-		fmt.Fprintf(w, "%s%s\n", strings.Repeat(" ", indent), usage)
+		_, _ = fmt.Fprintf(w, "%s%s\n", strings.Repeat(" ", indent), usage)
 		return
 	}
 	width := cols - indent
@@ -144,22 +144,22 @@ func wrapUsage(w io.Writer, usage string, indent, cols int) {
 	first := true
 	for _, word := range words {
 		if !first && lineLen+1+len(word) > width {
-			fmt.Fprintf(w, "\n%s", prefix)
+			_, _ = fmt.Fprintf(w, "\n%s", prefix)
 			lineLen = 0
 			first = true
 		}
 		if !first {
-			fmt.Fprint(w, " ")
+			_, _ = fmt.Fprint(w, " ")
 			lineLen++
 		} else {
-			fmt.Fprint(w, prefix)
+			_, _ = fmt.Fprint(w, prefix)
 		}
-		fmt.Fprint(w, word)
+		_, _ = fmt.Fprint(w, word)
 		lineLen += len(word)
 		first = false
 	}
 	if !first {
-		fmt.Fprintln(w)
+		_, _ = fmt.Fprintln(w)
 	}
 }
 
@@ -167,15 +167,15 @@ func wrapUsage(w io.Writer, usage string, indent, cols int) {
 // of all defined flags in the set.
 func (f *FlagSet) PrintDefaults() {
 	usages := f.FlagUsages()
-	fmt.Fprint(f.GetOutput(), usages)
+	_, _ = fmt.Fprint(f.GetOutput(), usages)
 }
 
 // defaultUsage is the default Usage function.
 func (f *FlagSet) defaultUsage() {
 	if f.name == "" {
-		fmt.Fprintf(f.GetOutput(), "Usage:\n")
+		_, _ = fmt.Fprintf(f.GetOutput(), "Usage:\n")
 	} else {
-		fmt.Fprintf(f.GetOutput(), "Usage of %s:\n", f.name)
+		_, _ = fmt.Fprintf(f.GetOutput(), "Usage of %s:\n", f.name)
 	}
 	f.PrintDefaults()
 }
